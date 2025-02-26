@@ -1,6 +1,7 @@
 using Mission08_Team0303.Data;
-using Mission08_Team0303.Models; // Ensure your model namespace is imported
+using Mission08_Team0303.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 
 namespace Mission08_Team0303.Controllers
@@ -19,11 +20,24 @@ namespace Mission08_Team0303.Controllers
             var tasks = _context.Tasks.Where(t => !t.Completed).ToList();
             return View(tasks);
         }
+        
+        public IActionResult CompletedTasks()
+        {
+            var tasks = _context.Tasks.Where(t => t.Completed).ToList();
+            return View(tasks);
+        }
 
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            ViewBag.Categories = _context.Categories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
+            return View();
+        }
 
         [HttpPost]
-        public IActionResult Create(ToDoTask task) // Use ToDoTask instead of Task
+        public IActionResult Create(ToDoTask task)
         {
             if (ModelState.IsValid)
             {
@@ -31,6 +45,12 @@ namespace Mission08_Team0303.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
+
+            // Repopulate categories if there's an error
+            ViewBag.Categories = _context.Categories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
             return View(task);
         }
 
@@ -38,11 +58,16 @@ namespace Mission08_Team0303.Controllers
         {
             var task = _context.Tasks.Find(id);
             if (task == null) return NotFound();
+
+            ViewBag.Categories = _context.Categories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
             return View(task);
         }
 
         [HttpPost]
-        public IActionResult Edit(ToDoTask task) // Use ToDoTask instead of Task
+        public IActionResult Edit(ToDoTask task)
         {
             if (ModelState.IsValid)
             {
@@ -50,6 +75,12 @@ namespace Mission08_Team0303.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
+
+            // Repopulate categories if there's an error
+            ViewBag.Categories = _context.Categories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
             return View(task);
         }
 
@@ -57,6 +88,7 @@ namespace Mission08_Team0303.Controllers
         {
             var task = _context.Tasks.Find(id);
             if (task == null) return NotFound();
+
             _context.Tasks.Remove(task);
             _context.SaveChanges();
             return RedirectToAction("Index");

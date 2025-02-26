@@ -1,24 +1,93 @@
-@model IEnumerable<Mission08_Team0303.Models.ToDoTask>
+@model List<Mission08_Team0303.Models.ToDoTask>
+
 @{
-    ViewData["Title"] = "Task List";
+    ViewData["Title"] = "Task Quadrants";
 }
-<h2>Task List</h2>
-<a href="@Url.Action("Create")">Add New Task</a>
-<table>
-    <tr>
-        <th>Task</th><th>Quadrant</th><th>Due Date</th><th>Category</th><th>Actions</th>
-    </tr>
-    @foreach (var task in Model)
-    {
-        <tr>
-            <td>@task.Name</td>
-            <td>@task.Quadrant</td>
-            <td>@(task.DueDate.HasValue ? task.DueDate.Value.ToShortDateString() : "N/A")</td>
-            <td>@task.Category</td>
-            <td>
-                <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a>
-                <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
-            </td>
-        </tr>
-    }
-</table>
+
+<h2>Task Quadrants</h2>
+
+<div class="container text-center">
+    <div class="row">
+        <!-- Quadrant I: Important / Urgent -->
+        <div class="col-md-6 border p-3">
+            <h4>Quadrant I: Important / Urgent</h4>
+            <table class="table">
+                <tr><th>Task</th><th>Due Date</th><th>Category</th><th>Actions</th></tr>
+                @foreach (var task in Model.Where(t => t.Quadrant == Quadrant.ImportantUrgent && !t.Completed))
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td>@(task.DueDate?.ToShortDateString() ?? "No Due Date")</td>
+                        <td>@task.Category</td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a> |
+                            <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <!-- Quadrant II: Important / Not Urgent -->
+        <div class="col-md-6 border p-3">
+            <h4>Quadrant II: Important / Not Urgent</h4>
+            <table class="table">
+                <tr><th>Task</th><th>Due Date</th><th>Category</th><th>Actions</th></tr>
+                @foreach (var task in Model.Where(t => t.Quadrant == Quadrant.ImportantNotUrgent && !t.Completed))
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td>@(task.DueDate?.ToShortDateString() ?? "No Due Date")</td>
+                        <td>@task.Category</td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a> |
+                            <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quadrant III: Not Important / Urgent -->
+        <div class="col-md-6 border p-3">
+            <h4>Quadrant III: Not Important / Urgent</h4>
+            <table class="table">
+                <tr><th>Task</th><th>Due Date</th><th>Category</th><th>Actions</th></tr>
+                @foreach (var task in Model.Where(t => t.Quadrant == Quadrant.NotImportantUrgent && !t.Completed))
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td>@(task.DueDate?.ToShortDateString() ?? "No Due Date")</td>
+                        <td>@task.Category</td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a> |
+                            <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <!-- Quadrant IV: Not Important / Not Urgent -->
+        <div class="col-md-6 border p-3">
+            <h4>Quadrant IV: Not Important / Not Urgent</h4>
+            <table class="table">
+                <tr><th>Task</th><th>Due Date</th><th>Category</th><th>Actions</th></tr>
+                @foreach (var task in Model.Where(t => t.Quadrant == Quadrant.NotImportantNotUrgent && !t.Completed))
+                {
+                    <tr>
+                        <td>@task.Name</td>
+                        <td>@(task.DueDate?.ToShortDateString() ?? "No Due Date")</td>
+                        <td>@task.Category</td>
+                        <td>
+                            <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a> |
+                            <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
