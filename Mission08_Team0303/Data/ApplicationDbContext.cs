@@ -1,10 +1,23 @@
-namespace Mission08_Team0303.Data;
-
 using Microsoft.EntityFrameworkCore;
 using Mission08_Team0303.Models;
 
-public class ApplicationDbContext : DbContext
+namespace Mission08_Team0303.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-    public DbSet<ToDoTask> Tasks { get; set; }
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
+        public DbSet<ToDoTask> Tasks { get; set; }
+        public DbSet<Category> Categories { get; set; } // ✅ Added
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "Home" },
+                new Category { Id = 2, Name = "School" },
+                new Category { Id = 3, Name = "Work" },
+                new Category { Id = 4, Name = "Church" }
+            );
+        }
+    }
 }
