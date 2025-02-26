@@ -42,9 +42,33 @@ namespace Mission08_Team0303.Controllers
         [HttpPost]
         public IActionResult Create(TaskViewModel viewModel)
         {
-            Console.Out.WriteLine("TEST LOG: " + viewModel.Task);
             _taskRepository.AddTask(viewModel.Task);
             return RedirectToAction("Index", "Task");
+        }
+        
+        [HttpPost]
+        public IActionResult UpdateTask([FromBody] ToDoTask task)
+        {
+            if (task == null)
+            {
+                return BadRequest("Invalid task data");
+            }
+
+            var existingTask = _taskRepository.GetTaskById(task.Id);
+            if (existingTask == null)
+            {
+                return NotFound();
+            }
+
+            existingTask.Name = task.Name;
+            existingTask.DueDate = task.DueDate;
+            existingTask.CategoryId = task.CategoryId;
+            existingTask.Quadrant = task.Quadrant;
+            existingTask.Completed = task.Completed;
+
+            _taskRepository.UpdateTask(existingTask);
+
+            return Ok();
         }
     }
 }
