@@ -1,11 +1,13 @@
 @model Mission08_Team0303.Models.ToDoTask
 
 <form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()  <!-- ✅ Ensure anti-forgery token is present -->
+
     <label>Task:</label>
     <input asp-for="Name" required />
 
     <label>Quadrant:</label>
-    <select asp-for="Quadrant" asp-items="Html.GetEnumSelectList<Quadrant>()"></select>
+    <select asp-for="Quadrant" asp-items="Html.GetEnumSelectList<Mission08_Team0303.Models.Quadrant>()"></select>
 
     <label>Due Date:</label>
     <input asp-for="DueDate" type="date" />
