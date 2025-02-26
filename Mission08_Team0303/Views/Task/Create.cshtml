@@ -1,0 +1,22 @@
+@model Mission08_Team0303.Models.ToDoTask
+<form method="post">
+    <label>Task:</label>
+    <input asp-for="Name" required />
+    <label>Quadrant:</label>
+    <select asp-for="Quadrant">
+        <option value="I">Important/Urgent</option>
+        <option value="II">Important/Not Urgent</option>
+        <option value="III">Not Important/Urgent</option>
+        <option value="IV">Not Important/Not Urgent</option>
+    </select>
+    <label>Due Date:</label>
+    <input asp-for="DueDate" type="date" />
+    <label>Category:</label>
+    <select asp-for="Category">
+        <option value="Home">Home</option>
+        <option value="School">School</option>
+        <option value="Work">Work</option>
+        <option value="Church">Church</option>
+    </select>
+    <button type="submit">Save</button>
+</form>

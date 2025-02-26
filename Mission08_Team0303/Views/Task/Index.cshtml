@@ -1,0 +1,24 @@
+@model IEnumerable<Mission08_Team0303.Models.ToDoTask>
+@{
+    ViewData["Title"] = "Task List";
+}
+<h2>Task List</h2>
+<a href="@Url.Action("Create")">Add New Task</a>
+<table>
+    <tr>
+        <th>Task</th><th>Quadrant</th><th>Due Date</th><th>Category</th><th>Actions</th>
+    </tr>
+    @foreach (var task in Model)
+    {
+        <tr>
+            <td>@task.Name</td>
+            <td>@task.Quadrant</td>
+            <td>@(task.DueDate.HasValue ? task.DueDate.Value.ToShortDateString() : "N/A")</td>
+            <td>@task.Category</td>
+            <td>
+                <a href="@Url.Action("Edit", new { id = task.Id })">Edit</a>
+                <a href="@Url.Action("Delete", new { id = task.Id })">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
