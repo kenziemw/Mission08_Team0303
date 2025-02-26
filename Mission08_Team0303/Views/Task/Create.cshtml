@@ -1,19 +1,42 @@
-@model Mission08_Team0303.Models.ToDoTask
+@model Mission08_Team0303.Models.ViewModels.TaskViewModel
 
-<form method="post" asp-action="Create">
-    @Html.AntiForgeryToken()  <!-- ✅ Ensure anti-forgery token is present -->
+@{
+    ViewData["Title"] = "Create Task";
+}
 
-    <label>Task:</label>
-    <input asp-for="Name" required />
+<h2>Create a New Task</h2>
 
-    <label>Quadrant:</label>
-    <select asp-for="Quadrant" asp-items="Html.GetEnumSelectList<Mission08_Team0303.Models.Quadrant>()"></select>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Task.Name"></label>
+        <input asp-for="Task.Name" class="form-control" />
+        <span asp-validation-for="Task.Name" class="text-danger"></span>
+    </div>
 
-    <label>Due Date:</label>
-    <input asp-for="DueDate" type="date" />
+    <div class="form-group">
+        <label asp-for="Task.DueDate"></label>
+        <input asp-for="Task.DueDate" type="date" class="form-control" />
+        <span asp-validation-for="Task.DueDate" class="text-danger"></span>
+    </div>
 
-    <label>Category:</label>
-    <select asp-for="CategoryId" asp-items="ViewBag.Categories" required></select>
+    <div class="form-group">
+        <label asp-for="Task.CategoryId"></label>
+        <select asp-for="Task.CategoryId" asp-items="Model.Categories" class="form-control">
+            <option value="">-- Select a Category --</option>
+        </select>
+        <span asp-validation-for="Task.CategoryId" class="text-danger"></span>
+    </div>
 
-    <button type="submit">Save</button>
+    <div class="form-group">
+        <label asp-for="Task.Quadrant"></label>
+        <select asp-for="Task.Quadrant" asp-items="Html.GetEnumSelectList<Mission08_Team0303.Models.Quadrant>()" class="form-control"></select>
+        <span asp-validation-for="Task.Quadrant" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Task.Completed"></label>
+        <input asp-for="Task.Completed" type="checkbox" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Task</button>
 </form>
