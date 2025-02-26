@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Mission08_Team0303.Models;
-using Mission08_Team0303.Repositories;  // ✅ Import the repository
+using Mission08_Team0303.Models.ViewModels;
+using Mission08_Team0303.Repositories;
+using System.Linq;
 
 namespace Mission08_Team0303.Controllers
 {
@@ -10,25 +13,38 @@ namespace Mission08_Team0303.Controllers
 
         public TaskController(ITaskRepository taskRepository)
         {
-            _taskRepository = taskRepository;  // ✅ Inject repository
+            _taskRepository = taskRepository;
+        }
+        
+        public IActionResult Index()
+        {
+            var tasks = _taskRepository.GetTasks();
+            return View(tasks);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var viewModel = new TaskViewModel
+            {
+                Task = new ToDoTask(),
+                Categories = _taskRepository.GetCategories()
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name
+                    })
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Create(ToDoTask task)
+        public IActionResult Create(TaskViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                _taskRepository.AddTask(task);  // ✅ Use repository to add task
-                return RedirectToAction("Index");
-            }
-
-            return View(task);
+            Console.Out.WriteLine("TEST LOG: " + viewModel.Task);
+            _taskRepository.AddTask(viewModel.Task);
+            return RedirectToAction("Index", "Task");
         }
     }
 }
