@@ -15,12 +15,14 @@ namespace Mission08_Team0303.Controllers
         {
             _taskRepository = taskRepository;
         }
-        
+
         public IActionResult Index()
         {
             var tasks = _taskRepository.GetTasks();
-            return View(tasks);
+            return View(Tasks);
         }
+
+        public string? Tasks { get; set; }
 
         [HttpGet]
         public IActionResult Create()
