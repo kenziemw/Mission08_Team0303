@@ -46,6 +46,56 @@ namespace Mission08_Team0303.Controllers
         [HttpPost]
         public IActionResult Create(TaskViewModel viewModel)
         {
+            // Ensure categories are always populated
+            viewModel.Categories = _taskRepository.GetCategories()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                });
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            _taskRepository.AddTask(viewModel.Task);
+            _taskRepository.Save();
+
+            // ✅ Redirect back to Index after creating the task
+            return RedirectToAction("Index", "Task");
+        }
+
+
+        // 📌 Edit task (GET)
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var task = _taskRepository.GetTaskById(id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new TaskViewModel
+            {
+                Task = task,
+                Categories = _taskRepository.GetCategories()
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.Id.ToString(),
+                        Text = c.Name
+                    })
+            };
+
+            return View(viewModel);
+        }
+        
+        // 📌 Edit task (POST)
+        [HttpPost]
+        public IActionResult Edit(TaskViewModel viewModel)
+        {
             if (!ModelState.IsValid)
             {
                 viewModel.Categories = _taskRepository.GetCategories()
@@ -58,95 +108,38 @@ namespace Mission08_Team0303.Controllers
                 return View(viewModel);
             }
 
-            _taskRepository.AddTask(viewModel.Task);
+            var existingTask = _taskRepository.GetTaskById(viewModel.Task.Id);
+            if (existingTask == null)
+            {
+                return NotFound();
+            }
+
+            existingTask.Name = viewModel.Task.Name;
+            existingTask.DueDate = viewModel.Task.DueDate;
+            existingTask.CategoryId = viewModel.Task.CategoryId;
+            existingTask.Quadrant = viewModel.Task.Quadrant;
+            existingTask.Completed = viewModel.Task.Completed;
+
+            _taskRepository.UpdateTask(existingTask);
+            _taskRepository.Save();
+
             return RedirectToAction("Index", "Task");
         }
 
-        // 📌 Update task (for inline AJAX save)
+        // 📌 Delete task (POST)
         [HttpPost]
-        public IActionResult UpdateTask([FromBody] ToDoTask task)
+        public IActionResult Delete(int id)
         {
-            try
+            var existingTask = _taskRepository.GetTaskById(id);
+            if (existingTask == null)
             {
-                // ✅ Log the entire received JSON object
-                Console.WriteLine("📥 Received Task Update Request:");
-                Console.WriteLine($"   🔹 JSON Data: {System.Text.Json.JsonSerializer.Serialize(task)}");
-
-                if (task == null)
-                {
-                    Console.WriteLine("❌ Error: Received NULL Task object.");
-                    return BadRequest(new { message = "Invalid task data. Task object is missing." });
-                }
-
-                if (task.Id == 0)
-                {
-                    Console.WriteLine("❌ Error: Task ID is missing or zero.");
-                    return BadRequest(new { message = "Invalid task data. Task ID is missing or invalid." });
-                }
-
-                var existingTask = _taskRepository.GetTaskById(task.Id);
-                if (existingTask == null)
-                {
-                    Console.WriteLine($"❌ Error: Task with ID {task.Id} not found.");
-                    return NotFound(new { message = $"Task with ID {task.Id} not found." });
-                }
-
-                // ✅ Log old vs new task data
-                Console.WriteLine($"🔄 Updating Task {task.Id}:");
-                Console.WriteLine($"   📝 Old Name: {existingTask.Name}  →  New Name: {task.Name}");
-                Console.WriteLine($"   📅 Old Due Date: {existingTask.DueDate}  →  New Due Date: {task.DueDate}");
-                Console.WriteLine($"   📌 Old Quadrant: {existingTask.Quadrant}  →  New Quadrant: {task.Quadrant}");
-                Console.WriteLine($"   ✅ Old Completed: {existingTask.Completed}  →  New Completed: {task.Completed}");
-
-                // ✅ Update task properties
-                existingTask.Name = task.Name ?? existingTask.Name;
-                existingTask.DueDate = task.DueDate ?? existingTask.DueDate;
-                existingTask.CategoryId = task.CategoryId != 0 ? task.CategoryId : existingTask.CategoryId;
-                existingTask.Quadrant = task.Quadrant;
-                existingTask.Completed = task.Completed;
-
-                _taskRepository.UpdateTask(existingTask);
-
-                Console.WriteLine($"✅ Task {task.Id} updated successfully.");
-
-                return Ok(new { message = "Task updated successfully", updatedTask = existingTask });
+                return NotFound(); // Return a 404 if the task doesn't exist
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Server Error: {ex.Message}");
-                return StatusCode(500, new { message = "Internal Server Error", error = ex.Message });
-            }
-        }
 
-        // 📌 Delete task (for inline AJAX delete)
-        [HttpPost] // Change to [HttpDelete] if frontend supports DELETE requests
-        public IActionResult DeleteTask([FromBody] ToDoTask task)
-        {
-            try
-            {
-                if (task == null || task.Id == 0)
-                {
-                    Console.WriteLine("❌ Error: Invalid task data received for delete.");
-                    return BadRequest(new { message = "Invalid task data. Task ID is missing." });
-                }
+            _taskRepository.DeleteTask(id);
+            _taskRepository.Save(); // Ensure changes are saved
 
-                var existingTask = _taskRepository.GetTaskById(task.Id);
-                if (existingTask == null)
-                {
-                    Console.WriteLine($"❌ Error: Task with ID {task.Id} not found.");
-                    return NotFound(new { message = $"Task with ID {task.Id} not found." });
-                }
-
-                _taskRepository.DeleteTask(task.Id);
-                Console.WriteLine($"🗑 Task {task.Id} deleted successfully.");
-
-                return Ok(new { message = "Task deleted successfully" });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Server Error during delete: {ex.Message}");
-                return StatusCode(500, new { message = "Internal Server Error", error = ex.Message });
-            }
+            return RedirectToAction("Index");
         }
     }
 }

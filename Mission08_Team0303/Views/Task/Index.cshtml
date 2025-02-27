@@ -4,175 +4,63 @@
 @{
     ViewData["Title"] = "Task Quadrants";
     var categories = _context.Categories.ToList();
-    var quadrants = Enum.GetValues(typeof(Quadrant)).Cast<Quadrant>().ToList();
 }
 
-<h2>Task Quadrants</h2>
+<h2 class="text-center">Task Quadrants</h2>
 
-<div class="text-center">
+<div class="container-fluid">
     <div class="row">
         @foreach (var quadrant in new[]
-                  {
-                      new { Title = "Quadrant I: Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantUrgent && !t.Completed) },
-                      new { Title = "Quadrant II: Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantNotUrgent && !t.Completed) },
-                      new { Title = "Quadrant III: Not Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantUrgent && !t.Completed) },
-                      new { Title = "Quadrant IV: Not Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantNotUrgent && !t.Completed) }
-                  })
+                      {
+                          new { Title = "Quadrant I: Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantUrgent && !t.Completed) },
+                          new { Title = "Quadrant II: Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantNotUrgent && !t.Completed) },
+                          new { Title = "Quadrant III: Not Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantUrgent && !t.Completed) },
+                          new { Title = "Quadrant IV: Not Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantNotUrgent && !t.Completed) }
+                      })
         {
-            <div class="col-lg-6 border p-3 quadrant-container">
-                <h4>@quadrant.Title</h4>
-                <table class="table w-auto table-responsive">
-                    <tr>
-                        <th>Task</th>
-                        <th>Due Date</th>
-                        <th>Category</th>
-                        <th>Quadrant</th>
-                        <th>Completed</th>
-                        <th>Actions</th>
-                    </tr>
-                    @foreach (var task in quadrant.Tasks)
-                    {
-                        <tr data-id="@task.Id" onclick="console.log('Task ID in HTML:', @task.Id)">
-                            <td>
-                                <span class="view-mode">@task.Name</span>
-                                <input type="text" class="edit-mode form-control d-none" value="@task.Name">
-                            </td>
-                            <td>
-                                <span class="view-mode">@(task.DueDate?.ToShortDateString() ?? "No Due Date")</span>
-                                <input type="date" class="edit-mode form-control d-none" value="@(task.DueDate?.ToString("yyyy-MM-dd") ?? "")">
-                            </td>
-                            <td>
-                                <span class="view-mode">@task.Category?.Name</span>
-                                <select class="edit-mode form-control d-none">
-                                    @foreach (var category in categories)
-                                    {
-                                        <option value="@category.Id" selected="@(category.Id == task.CategoryId ? "selected" : null)">@category.Name</option>
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                <span class="view-mode">@task.Quadrant</span>
-                                <select class="edit-mode form-control d-none">
-                                    @foreach (var singleQuadrant in quadrants)
-                                    {
-                                        <option value="@singleQuadrant.ToString()" selected="@(singleQuadrant == task.Quadrant ? "selected" : null)">@singleQuadrant</option>
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                <input type="checkbox" class="edit-mode form-check-input" @(task.Completed ? "checked" : "")>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-primary edit-btn">Edit</button>
-                                <button class="btn btn-sm btn-success save-btn d-none">Save</button>
-                                <button class="btn btn-sm btn-danger delete-btn">Delete</button>
-                            </td>
+            <div class="col-lg-6 col-md-6 col-sm-12 quadrant-container">
+                <h4 class="quadrant-title">@quadrant.Title</h4>
+                <div class="quadrant-content">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                        <tr>
+                            <th class="fit-column">Task</th>
+                            <th class="fit-column">Due Date</th>
+                            <th class="fit-column">Category</th>
+                            <th class="fit-column">Actions</th>
                         </tr>
-                    }
-                </table>
+                        </thead>
+                        <tbody>
+                        @foreach (var task in quadrant.Tasks)
+                        {
+                            <tr>
+                                <td>@task.Name</td>
+                                <td>@(task.DueDate?.ToShortDateString() ?? "No Due Date")</td>
+                                <td>@task.Category?.Name</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">Edit</a>
+                                    <form asp-action="Delete" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         }
+    </div>
+
+    <!-- Add Task Button -->
+    <div class="text-center mt-4">
+        <a asp-action="Create" class="btn btn-lg btn-success">+ Add Task</a>
     </div>
 </div>
 
 <style>
-    .table {
-        width: 100%;
-        table-layout: auto;
-    }
-    .table th, .table td {
-        white-space: nowrap;
-        padding: 8px;
-    }
     .quadrant-container {
-        overflow-x: auto;
+        padding: 20px;
     }
 </style>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Handle Edit Button Click
-            $(".edit-btn").click(function () {
-                var row = $(this).closest("tr");
-                row.find(".view-mode").addClass("d-none");
-                row.find(".edit-mode").removeClass("d-none");
-                row.find(".edit-btn").addClass("d-none");
-                row.find(".save-btn").removeClass("d-none");
-            });
-
-            // Handle Save Button Click (AJAX Update)
-            $(document).on("click", ".save-btn", function () {
-                console.log("✅ Save button clicked!");
-                var row = $(this).closest("tr");
-                var taskId = row.attr("data-id"); // Ensure we capture ID correctly
-
-                if (!taskId || taskId === "0" || taskId === "undefined") {
-                    console.error("❌ Task ID is missing or invalid:", taskId);
-                    alert("Error: Task ID is missing. Check database and HTML.");
-                    return;
-                }
-
-                var updatedTask = {
-                    Id: parseInt(taskId),
-                    Name: row.find("input[type=text]").val().trim(),
-                    DueDate: row.find("input[type=date]").val() || null,
-                    CategoryId: parseInt(row.find("select:eq(0)").val()) || null,
-                    Quadrant: row.find("select:eq(1)").val(),
-                    Completed: row.find("input[type=checkbox]").prop("checked")
-                };
-
-                console.log("✅ Final Updated Task Sent to Server:", updatedTask);
-                console.log("✅ JSON Stringified Data:", JSON.stringify(updatedTask));
-
-                $.ajax({
-                    url: '/Task/UpdateTask',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(updatedTask),
-                    success: function (response) {
-                        console.log("✅ Task updated successfully:", response);
-                        row.find(".view-mode:eq(0)").text(updatedTask.Name);
-                        row.find(".view-mode:eq(1)").text(updatedTask.DueDate || "No Due Date");
-                        row.find(".view-mode:eq(2)").text(row.find("select:eq(0) option:selected").text());
-                        row.find(".view-mode:eq(3)").text(row.find("select:eq(1) option:selected").text());
-
-                        row.find(".view-mode").removeClass("d-none");
-                        row.find(".edit-mode").addClass("d-none");
-                        row.find(".edit-btn").removeClass("d-none");
-                        row.find(".save-btn").addClass("d-none");
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Update failed:", xhr.responseText);
-                        alert("Failed to update task: " + xhr.responseText);
-                    }
-                });
-            });
-
-            // Handle Delete Button Click
-            $(document).on("click", ".delete-btn", function () {
-                var row = $(this).closest("tr");
-                var taskId = row.attr("data-id");
-
-                if (!confirm("Are you sure you want to delete this task?")) return;
-
-                console.log("🗑 Deleting Task ID:", taskId);
-
-                $.ajax({
-                    url: "/Task/DeleteTask",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ Id: taskId }),
-                    success: function () {
-                        row.remove();
-                        alert("✅ Task deleted successfully.");
-                    },
-                    error: function (xhr) {
-                        console.error("❌ Delete failed:", xhr.responseText);
-                        alert("Failed to delete task.");
-                    }
-                });
-            });
-        });
-    </script>
-}

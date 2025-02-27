@@ -31,7 +31,7 @@ namespace Mission08_Team0303.Models
         public int CategoryId { get; set; }  // ✅ Changed from string to Foreign Key
 
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }  // ✅ Foreign Key Relationship
+        public Category? Category { get; set; }  // ✅ Foreign Key Relationship
 
         public bool Completed { get; set; }
     }

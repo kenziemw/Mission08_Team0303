@@ -6,7 +6,7 @@ namespace Mission08_Team0303.Models.ViewModels
 {
     public class TaskViewModel
     {
-        public ToDoTask Task { get; set; }
-        public IEnumerable<SelectListItem> Categories { get; set; }
+        public ToDoTask Task { get; set; } = new ToDoTask(); // ✅ Ensure it's initialized
+        public IEnumerable<SelectListItem> Categories { get; set; } = new List<SelectListItem>(); // ✅ Prevent null
     }
 }
