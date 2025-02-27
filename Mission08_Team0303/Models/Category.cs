@@ -1,3 +1,5 @@
+// Set up Category for DB
+
 using System.ComponentModel.DataAnnotations;
 
 namespace Mission08_Team0303.Models
