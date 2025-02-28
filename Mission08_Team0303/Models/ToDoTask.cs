@@ -1,4 +1,4 @@
-// Set up Task for DB
+// Set up Task for Database
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -25,13 +25,13 @@ namespace Mission08_Team0303.Models
         public DateTime? DueDate { get; set; }
 
         [Required]
-        public Quadrant Quadrant { get; set; }  // ✅ Changed from string to Enum
+        public Quadrant Quadrant { get; set; } 
 
         [Required]
-        public int CategoryId { get; set; }  // ✅ Changed from string to Foreign Key
+        public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public Category? Category { get; set; }  // ✅ Foreign Key Relationship
+        public Category? Category { get; set; }
 
         public bool Completed { get; set; }
     }

@@ -8,7 +8,7 @@ namespace Mission08_Team0303.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<ToDoTask> Tasks { get; set; }
-        public DbSet<Category> Categories { get; set; } // ✅ Added
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
