@@ -1,4 +1,4 @@
-// Set up Category for DB
+// Set up Category for Database
 
 using System.ComponentModel.DataAnnotations;
 
