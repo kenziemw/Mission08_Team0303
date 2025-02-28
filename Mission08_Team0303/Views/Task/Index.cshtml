@@ -1,6 +1,7 @@
 @model IEnumerable<ToDoTask>
 @inject Mission08_Team0303.Data.ApplicationDbContext _context
 
+<!-- This is the Task Index view. It displays tasks in four quadrants based on their importance and urgency. Users can view, edit, and delete tasks from each quadrant. -->
 @{
     ViewData["Title"] = "Task Quadrants";
     var categories = _context.Categories.ToList();
@@ -10,13 +11,14 @@
 
 <div class="container-fluid">
     <div class="row">
+        <!-- This is the Task Index view. It displays tasks in four quadrants based on their importance and urgency. Users can view, edit, and delete tasks from each quadrant. -->
         @foreach (var quadrant in new[]
-                      {
-                          new { Title = "Quadrant I: Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantUrgent && !t.Completed) },
-                          new { Title = "Quadrant II: Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantNotUrgent && !t.Completed) },
-                          new { Title = "Quadrant III: Not Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantUrgent && !t.Completed) },
-                          new { Title = "Quadrant IV: Not Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantNotUrgent && !t.Completed) }
-                      })
+                  {
+                      new { Title = "Quadrant I: Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantUrgent && !t.Completed) },
+                      new { Title = "Quadrant II: Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.ImportantNotUrgent && !t.Completed) },
+                      new { Title = "Quadrant III: Not Important / Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantUrgent && !t.Completed) },
+                      new { Title = "Quadrant IV: Not Important / Not Urgent", Tasks = Model.Where(t => t.Quadrant == Quadrant.NotImportantNotUrgent && !t.Completed) }
+                  })
         {
             <div class="col-lg-6 col-md-6 col-sm-12 quadrant-container">
                 <h4 class="quadrant-title">@quadrant.Title</h4>
@@ -31,6 +33,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- For each task in the quadrant, display the task name, due date, category, and actions (edit and delete). -->
                         @foreach (var task in quadrant.Tasks)
                         {
                             <tr>
@@ -40,7 +43,7 @@
                                 <td>
                                     <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">Edit</a>
                                     <form asp-action="Delete" method="post" style="display:inline;">
-                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <input type="hidden" name="id" value="@task.Id"/>
                                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                     </form>
                                 </td>
